@@ -57,7 +57,7 @@ class MyFavorites extends React.Component {
     ///updatemyfav/:photoId
     let updatedData = axios.put(`${process.env.REACT_APP_SERVER}/updatemyfav/${_id}?email=${user.email}`, data);
     let dataAfterUpdate = updatedData.data;
-    await this.setState({
+    this.setState({
       myFavorites: dataAfterUpdate,
       show: false
     });

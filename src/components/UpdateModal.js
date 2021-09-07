@@ -6,7 +6,7 @@ class UpdateModal extends React.Component {
         return (
             <div>
                 <Modal show={this.props.show} >
-                    <Form onSubmit={this.handleSubmit}>
+                    <Form onSubmit={this.props.handleSubmit}>
                         <Form.Control type="text" name="name" defaultValue={this.props.selectedObj.name} />
                         <Form.Control type="text" name="image" defaultValue={this.props.selectedObj.image} />
                         <Button variant="primary" >
