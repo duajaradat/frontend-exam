@@ -4,12 +4,15 @@ import '././MyFavorites.js';
 import { withAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 import { Card, Button } from 'react-bootstrap';
+import UpdateModal from './UpdateModal.js';
 
 class MyFavorites extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       myFavorites: [],
+      show: false,
+      selectedObj: {}
     }
   }
   componentDidMount = async () => {
@@ -37,6 +40,29 @@ class MyFavorites extends React.Component {
       })
     }
   }
+  updateModal = async (Obj) => {
+    this.setState({
+      show: true,
+      selectedObj: Obj
+    })
+  }
+  handleSubmit = async (e) => {
+    e.preventDefault();
+    const { user, isAuthenticated } = this.props.auth0;
+    const _id = this.state.selectedObj._id;
+    const data = {
+      name: e.target.name.value,
+      image: e.target.image.value
+    }
+    ///updatemyfav/:photoId
+    let updatedData = axios.put(`${process.env.REACT_APP_SERVER}/updatemyfav/${_id}?email=${user.email}`, data);
+    let dataAfterUpdate = updatedData.data;
+    await this.setState({
+      myFavorites: dataAfterUpdate,
+      show: false
+    });
+
+  }
 
   render() {
     return (
@@ -47,14 +73,17 @@ class MyFavorites extends React.Component {
         </p>
         {this.state.myFavorites.map((Obj, i) => {
           return (
-            <Card key={i} style={{ width: '18rem' }}>
-              <Card.Img variant="top" src={Obj.image} />
-              <Card.Body>
-                <Card.Title>{Obj.name}</Card.Title>
-                <Button onClick={() => { this.deleteFromMyFav(Obj._id) }} variant="primary">Delete</Button>
-                <Button variant="primary">Update</Button>
-              </Card.Body>
-            </Card>
+            <>
+              <Card key={i} style={{ width: '18rem' }}>
+                <Card.Img variant="top" src={Obj.image} />
+                <Card.Body>
+                  <Card.Title>{Obj.name}</Card.Title>
+                  <Button onClick={() => { this.deleteFromMyFav(Obj._id) }} variant="primary">Delete</Button>
+                  <Button onClick={() => { this.updateModal(Obj) }} variant="primary">Update</Button>
+                </Card.Body>
+              </Card>
+              {this.state.show && < UpdateModal show={this.state.show} selectedObj={this.state.selectedObj} handleSubmit={this.handleSubmit} />}
+            </>
           )
         })}
       </>
